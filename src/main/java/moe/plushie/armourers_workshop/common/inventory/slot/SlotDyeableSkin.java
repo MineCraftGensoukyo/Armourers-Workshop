@@ -9,14 +9,14 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 public class SlotDyeableSkin extends Slot {
-    
+
     private final ContainerDyeTable container;
-    
+
     public SlotDyeableSkin(IInventory inventory, int slotIndex, int xPosition, int yPosition, ContainerDyeTable container) {
         super(inventory, slotIndex, xPosition, yPosition);
         this.container = container;
     }
-    
+
     @Override
     public boolean isItemValid(ItemStack stack) {
         SkinDescriptor sp = SkinNBTHelper.getSkinDescriptorFromStack(stack);
@@ -25,15 +25,21 @@ public class SlotDyeableSkin extends Slot {
         }
         return false;
     }
-    
+
     @Override
     public boolean canTakeStack(EntityPlayer player) {
         return false;
     }
-    
+
     @Override
     public void onSlotChanged() {
         ItemStack stack = getStack();
+
+        // if skin is in input slot refuse to click to generate more bottle
+        if (getSlotIndex() == 0 &&  container.getOutputSlot().getHasStack()) {
+            return;
+        }
+
         if (stack.isEmpty()) {
             container.skinRemoved();
         } else {
