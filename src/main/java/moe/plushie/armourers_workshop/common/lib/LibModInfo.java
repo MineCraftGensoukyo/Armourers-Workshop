@@ -3,7 +3,7 @@ package moe.plushie.armourers_workshop.common.lib;
 public class LibModInfo {
     
     public static final String ID = "armourers_workshop";
-    public static final String NAME = "Armourer's Workshop";
+    public static final String NAME = "Armourer's Workshop MCG Version";
     public static final String MOD_VERSION = "@VERSION@";
     //public static final String MOD_VERSION = "1.12.2-0.49.0.397";
     public static final ReleaseType RELEASE_TYPE = ReleaseType.BETA;
