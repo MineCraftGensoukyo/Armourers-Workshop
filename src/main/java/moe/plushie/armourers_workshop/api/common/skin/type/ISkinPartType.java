@@ -9,6 +9,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public interface ISkinPartType {
 
+    public  String getBaseTypeRegistryName();
+
+
     /**
      * Gets the name this skin will be registered with. Armourer's Workshop uses the
      * format baseType.getRegistryName() + "." + getPartName(). Example

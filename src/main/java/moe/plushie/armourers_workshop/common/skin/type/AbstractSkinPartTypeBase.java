@@ -47,6 +47,11 @@ public abstract class AbstractSkinPartTypeBase implements ISkinPartType {
     }
 
     @Override
+    public String getBaseTypeRegistryName() {
+        return baseType.getRegistryName();
+    }
+
+    @Override
     public String getRegistryName() {
         return baseType.getRegistryName() + "." + getPartName();
     }

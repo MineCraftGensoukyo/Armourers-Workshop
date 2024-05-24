@@ -81,57 +81,93 @@ public class ModelSkinOutfit extends ModelTypeHelper {
                 GL11.glTranslatef(0.0F, 24.0F * SCALE, 0.0F);
             }
 
-            if (part.getPartType().getRegistryName().equals("armourers:head.base")) {
-                boolean doHead = true;
-                // Fix to stop head skins rendering when using the Real First-Person Render mod.
-                if (entity != null && entity.equals(Minecraft.getMinecraft().player)) {
-                    if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 0) {
-                        StackTraceElement[] traceElements = Thread.currentThread().getStackTrace();
-                        for (int j = 0; j < traceElements.length; j++) {
-                            StackTraceElement traceElement = traceElements[j];
-                            if (traceElement.toString().contains("realrender") | traceElement.toString().contains("rfpf")) {
-                                doHead = false;
-                                break;
+            String baseTypeRegistryName = part.getPartType().getBaseTypeRegistryName();
+            String registryName = part.getPartType().getPartName();
+
+
+            switch (baseTypeRegistryName) {
+                case "armourers:head":
+                    if (registryName.equals("base")) {
+                        boolean doHead = true;
+                        // Fix to stop head skins rendering when using the Real First-Person Render mod.
+                        if (entity != null && entity.equals(Minecraft.getMinecraft().player)) {
+                            if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 0) {
+                                StackTraceElement[] traceElements = Thread.currentThread().getStackTrace();
+                                for (int j = 0; j < traceElements.length; j++) {
+                                    StackTraceElement traceElement = traceElements[j];
+                                    if (traceElement.toString().contains("realrender") | traceElement.toString().contains("rfpf")) {
+                                        doHead = false;
+                                        break;
+                                    }
+                                }
                             }
                         }
+                        if (doHead) {
+                            renderHead(new SkinPartRenderData(part, renderData));
+                        }
                     }
-                }
-                if (doHead) {
-                    renderHead(new SkinPartRenderData(part, renderData));
-                }
-            }
+                    break;
 
-            if (part.getPartType().getRegistryName().equals("armourers:chest.base")) {
-                renderChest(new SkinPartRenderData(part, renderData));
-            } else if (part.getPartType().getRegistryName().equals("armourers:chest.leftArm")) {
-                renderLeftArm(new SkinPartRenderData(part, renderData), overrideChest);
-            } else if (part.getPartType().getRegistryName().equals("armourers:chest.rightArm")) {
-                renderRightArm(new SkinPartRenderData(part, renderData), overrideChest);
-            }
+                case "armourers:chest":
+                    switch (registryName) {
+                        case "base":
+                            renderChest(new SkinPartRenderData(part, renderData));
+                            break;
+                        case "leftArm":
+                            renderLeftArm(new SkinPartRenderData(part, renderData), overrideChest);
+                            break;
+                        case "rightArm":
+                            renderRightArm(new SkinPartRenderData(part, renderData), overrideChest);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
 
-            if (part.getPartType().getRegistryName().equals("armourers:legs.leftLeg")) {
-                renderLeftLeg(new SkinPartRenderData(part, renderData));
-            } else if (part.getPartType().getRegistryName().equals("armourers:legs.rightLeg")) {
-                renderRightLeg(new SkinPartRenderData(part, renderData));
-            } else if (part.getPartType().getRegistryName().equals("armourers:legs.skirt")) {
-                renderSkirt(new SkinPartRenderData(part, renderData));
+                case "armourers:legs":
+                    switch (registryName) {
+                        case "leftLeg":
+                            renderLeftLeg(new SkinPartRenderData(part, renderData));
+                            break;
+                        case "rightLeg":
+                            renderRightLeg(new SkinPartRenderData(part, renderData));
+                            break;
+                        case "skirt":
+                            renderSkirt(new SkinPartRenderData(part, renderData));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case "armourers:feet":
+                    switch (registryName) {
+                        case "leftFoot":
+                            renderLeftFoot(new SkinPartRenderData(part, renderData));
+                            break;
+                        case "rightFoot":
+                            renderRightFoot(new SkinPartRenderData(part, renderData));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case "wings":
+                    switch (registryName) {
+                        case "leftWing":
+                            angle = SkinUtils.getFlapAngleForWings(entity, skin, i);
+                            renderLeftWing(new SkinPartRenderData(part, renderData), angle);
+                            break;
+                        case "rightWing":
+                            angle = SkinUtils.getFlapAngleForWings(entity, skin, i);
+                            renderRightWing(new SkinPartRenderData(part, renderData), -angle);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                default:
+                    break;
             }
-
-            if (part.getPartType().getRegistryName().equals("armourers:feet.leftFoot")) {
-                renderLeftFoot(new SkinPartRenderData(part, renderData));
-            } else if (part.getPartType().getRegistryName().equals("armourers:feet.rightFoot")) {
-                renderRightFoot(new SkinPartRenderData(part, renderData));
-            }
-
-            if (part.getPartType().getRegistryName().equals("armourers:wings.leftWing")) {
-                angle = SkinUtils.getFlapAngleForWings(entity, skin, i);
-                renderLeftWing(new SkinPartRenderData(part, renderData), angle);
-            }
-            if (part.getPartType().getRegistryName().equals("armourers:wings.rightWing")) {
-                angle = SkinUtils.getFlapAngleForWings(entity, skin, i);
-                renderRightWing(new SkinPartRenderData(part, renderData), -angle);
-            }
-
             GL11.glPopMatrix();
         }
         GlStateManager.popAttrib();
@@ -333,24 +369,24 @@ public class ModelSkinOutfit extends ModelTypeHelper {
         GL11.glTranslated(partRenderData.getScale() * point.getX(), partRenderData.getScale() * point.getY(), partRenderData.getScale() * point.getZ());
 
         switch (axis) {
-        case UP:
-            GL11.glRotated(angle, 0, 1, 0);
-            break;
-        case DOWN:
-            GL11.glRotated(angle, 0, -1, 0);
-            break;
-        case SOUTH:
-            GL11.glRotated(angle, 0, 0, -1);
-            break;
-        case NORTH:
-            GL11.glRotated(angle, 0, 0, 1);
-            break;
-        case EAST:
-            GL11.glRotated(angle, 1, 0, 0);
-            break;
-        case WEST:
-            GL11.glRotated(angle, -1, 0, 0);
-            break;
+            case UP:
+                GL11.glRotated(angle, 0, 1, 0);
+                break;
+            case DOWN:
+                GL11.glRotated(angle, 0, -1, 0);
+                break;
+            case SOUTH:
+                GL11.glRotated(angle, 0, 0, -1);
+                break;
+            case NORTH:
+                GL11.glRotated(angle, 0, 0, 1);
+                break;
+            case EAST:
+                GL11.glRotated(angle, 1, 0, 0);
+                break;
+            case WEST:
+                GL11.glRotated(angle, -1, 0, 0);
+                break;
         }
 
         GL11.glTranslated(partRenderData.getScale() * -point.getX(), partRenderData.getScale() * -point.getY(), partRenderData.getScale() * -point.getZ());
@@ -382,24 +418,24 @@ public class ModelSkinOutfit extends ModelTypeHelper {
         GL11.glTranslated(partRenderData.getScale() * point.getX(), partRenderData.getScale() * point.getY(), partRenderData.getScale() * point.getZ());
 
         switch (axis) {
-        case UP:
-            GL11.glRotated(angle, 0, 1, 0);
-            break;
-        case DOWN:
-            GL11.glRotated(angle, 0, -1, 0);
-            break;
-        case SOUTH:
-            GL11.glRotated(angle, 0, 0, -1);
-            break;
-        case NORTH:
-            GL11.glRotated(angle, 0, 0, 1);
-            break;
-        case EAST:
-            GL11.glRotated(angle, 1, 0, 0);
-            break;
-        case WEST:
-            GL11.glRotated(angle, -1, 0, 0);
-            break;
+            case UP:
+                GL11.glRotated(angle, 0, 1, 0);
+                break;
+            case DOWN:
+                GL11.glRotated(angle, 0, -1, 0);
+                break;
+            case SOUTH:
+                GL11.glRotated(angle, 0, 0, -1);
+                break;
+            case NORTH:
+                GL11.glRotated(angle, 0, 0, 1);
+                break;
+            case EAST:
+                GL11.glRotated(angle, 1, 0, 0);
+                break;
+            case WEST:
+                GL11.glRotated(angle, -1, 0, 0);
+                break;
         }
 
         GL11.glTranslated(partRenderData.getScale() * -point.getX(), partRenderData.getScale() * -point.getY(), partRenderData.getScale() * -point.getZ());
