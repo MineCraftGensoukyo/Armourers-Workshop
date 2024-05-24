@@ -20,7 +20,7 @@ if (System.env.BUILD_NUMBER != null) {
 }
 
 group= "moe.plushie.armourers_workshop"
-archivesBaseName = "Armourers-Workshop"
+archivesBaseName = "Armourers-Workshop-MCG"
 
 minecraft {
     version = "$project.minecraftVersion-$project.forgeVersion"
