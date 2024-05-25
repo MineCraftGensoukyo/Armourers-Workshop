@@ -1,6 +1,7 @@
 package moe.plushie.armourers_workshop.client.model.skin;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.lwjgl.opengl.GL11;
 
@@ -70,6 +71,7 @@ public class ModelSkinOutfit extends ModelTypeHelper {
         boolean overrideChest = SkinProperties.PROP_MODEL_OVERRIDE_CHEST.getValue(skin.getProperties());
 
         double angle = 45D;
+        int[] partIndexList = SkinUtils.getSkinPartIndexMap(skin);
 
         for (int i = 0; i < parts.size(); i++) {
             SkinPart part = parts.get(i);
@@ -151,14 +153,21 @@ public class ModelSkinOutfit extends ModelTypeHelper {
                             break;
                     }
                     break;
-                case "wings":
+                case "armourers:wings":
+                    int index = -1;
+                    for (int partIndex = 0; partIndex < partIndexList.length; partIndex++) {
+                        if (i < partIndexList[partIndex]) {
+                            index = partIndex;
+                            break;
+                        }
+                    }
                     switch (registryName) {
                         case "leftWing":
-                            angle = SkinUtils.getFlapAngleForWings(entity, skin, i);
+                            angle = SkinUtils.getFlapAngleForWings(entity, skin, index);
                             renderLeftWing(new SkinPartRenderData(part, renderData), angle);
                             break;
                         case "rightWing":
-                            angle = SkinUtils.getFlapAngleForWings(entity, skin, i);
+                            angle = SkinUtils.getFlapAngleForWings(entity, skin, index);
                             renderRightWing(new SkinPartRenderData(part, renderData), -angle);
                             break;
                         default:

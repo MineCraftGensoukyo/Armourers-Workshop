@@ -34,8 +34,8 @@ public class SkinProperty<T> implements ISkinProperty<T> {
     }
 
     public T getValue(ISkinProperties properties, int index) {
-        if (properties.haveProperty(key + String.valueOf(index))) {
-            return (T) properties.getProperty(key + String.valueOf(index), defaultValue);
+        if (properties.haveProperty(key + index)) {
+            return (T) properties.getProperty(key + index, defaultValue);
         } else if (properties.haveProperty(key)) {
             return (T) properties.getProperty(key, defaultValue);
         } else {

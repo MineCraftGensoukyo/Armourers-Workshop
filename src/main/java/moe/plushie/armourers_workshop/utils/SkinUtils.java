@@ -2,6 +2,9 @@ package moe.plushie.armourers_workshop.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Array;
+import java.util.HashMap;
+import java.util.Map;
 
 import moe.plushie.armourers_workshop.ArmourersWorkshop;
 import moe.plushie.armourers_workshop.api.common.skin.data.ISkinDescriptor;
@@ -80,18 +83,17 @@ public final class SkinUtils {
         return skinCopy;
     }
 
-    private static int getSkinIndex(String partIndexProp, Skin skin, int partIndex) {
-        String[] split = partIndexProp.split(":");
-        for (int i = 0; i < split.length; i++) {
-            int count = Integer.parseInt(split[i]);
-            if (partIndex < count) {
-                return i;
-            }
+    public static int[] getSkinPartIndexMap(Skin skin) {
+        String partIndexProp = SkinProperties.PROP_OUTFIT_PART_INDEXS.getValue(skin.getProperties());
+        String[] partIndexSplit = partIndexProp.split(":");
+        int[]  partIndex = new int[partIndexSplit.length];
+        for (int i = 0; i < partIndexSplit.length; i++) {
+            partIndex[i] = Integer.parseInt(partIndexSplit[i]);
         }
-        return -1;
+        return partIndex;
     }
 
-    public static double getFlapAngleForWings(Entity entity, Skin skin, int partIndex) {
+    public static double getFlapAngleForWings(Entity entity, Skin skin, int index) {
 
         double maxAngle = SkinProperties.PROP_WINGS_MAX_ANGLE.getValue(skin.getProperties());
         double minAngle = SkinProperties.PROP_WINGS_MIN_ANGLE.getValue(skin.getProperties());
@@ -99,18 +101,12 @@ public final class SkinUtils {
         double flyingSpeed = SkinProperties.PROP_WINGS_FLYING_SPEED.getValue(skin.getProperties());
         MovementType movmentType = MovementType.valueOf(SkinProperties.PROP_WINGS_MOVMENT_TYPE.getValue(skin.getProperties()));
 
-        if (skin.getSkinType() == SkinTypeRegistry.skinOutfit) {
-            String partIndexProp = SkinProperties.PROP_OUTFIT_PART_INDEXS.getValue(skin.getProperties());
-            if (!partIndexProp.equals("")) {
-                int index = getSkinIndex(partIndexProp, skin, partIndex);
-                if (index != -1) {
-                    maxAngle = SkinProperties.PROP_WINGS_MAX_ANGLE.getValue(skin.getProperties(), index);
-                    minAngle = SkinProperties.PROP_WINGS_MIN_ANGLE.getValue(skin.getProperties(), index);
-                    idleSpeed = SkinProperties.PROP_WINGS_IDLE_SPEED.getValue(skin.getProperties(), index);
-                    flyingSpeed = SkinProperties.PROP_WINGS_FLYING_SPEED.getValue(skin.getProperties(), index);
-                    movmentType = MovementType.valueOf(SkinProperties.PROP_WINGS_MOVMENT_TYPE.getValue(skin.getProperties(), index));
-                }
-            }
+        if (skin.getSkinType() == SkinTypeRegistry.skinOutfit && index != -1) {
+            maxAngle = SkinProperties.PROP_WINGS_MAX_ANGLE.getValue(skin.getProperties(), index);
+            minAngle = SkinProperties.PROP_WINGS_MIN_ANGLE.getValue(skin.getProperties(), index);
+            idleSpeed = SkinProperties.PROP_WINGS_IDLE_SPEED.getValue(skin.getProperties(), index);
+            flyingSpeed = SkinProperties.PROP_WINGS_FLYING_SPEED.getValue(skin.getProperties(), index);
+            movmentType = MovementType.valueOf(SkinProperties.PROP_WINGS_MOVMENT_TYPE.getValue(skin.getProperties(), index));
         }
 
         double angle = 0;
