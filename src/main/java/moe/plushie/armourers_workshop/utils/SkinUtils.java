@@ -86,9 +86,11 @@ public final class SkinUtils {
     public static int[] getSkinPartIndexMap(Skin skin) {
         String partIndexProp = SkinProperties.PROP_OUTFIT_PART_INDEXS.getValue(skin.getProperties());
         String[] partIndexSplit = partIndexProp.split(":");
-        int[]  partIndex = new int[partIndexSplit.length];
+        int[] partIndex = new int[partIndexSplit.length];
         for (int i = 0; i < partIndexSplit.length; i++) {
-            partIndex[i] = Integer.parseInt(partIndexSplit[i]);
+            if (!partIndexSplit[i].isEmpty()) {
+                partIndex[i] = Integer.parseInt(partIndexSplit[i]);
+            }
         }
         return partIndex;
     }
